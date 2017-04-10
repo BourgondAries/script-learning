@@ -1,6 +1,8 @@
 #! /usr/bin/env racket
 #lang racket
 
+(require syntax/parse/define)
+
 (displayln "Convert the kana into romaji.
 Input  hiragana  to switch to ひらがな.
        katakana  to switch to カタカナ.
@@ -38,10 +40,13 @@ Input  hiragana  to switch to ひらがな.
     ([<= value 0] 1)
     (else value)))
 
-(define start-letter-count 5)
-(define hiragana first)
-(define katakana second)
-(define romaji   third)
+(define-simple-macro (defines (name:id value:expr) ...+)
+  (begin (define name value) ...))
+
+(defines (start-letter-count 5)
+         (hiragana first)
+         (katakana second)
+         (romaji   third))
 
 (define (display-many . many)
   (for ([i many])
