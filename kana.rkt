@@ -67,7 +67,8 @@ Input  ka        correct answer for か or カ (similar for other kana).
 (define (clamp-letter-count value)
   (cond
     ([> value (length alphabet)] (length alphabet))
-    ([<= value 0] 1)
+    ([= value 0] (length alphabet))
+    ([< value 0] 1)
     (else value)))
 
 (define (display-many . many)
