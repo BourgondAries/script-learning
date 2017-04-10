@@ -3,12 +3,14 @@
 
 (require syntax/parse/define)
 
-(displayln "Convert the kana into romaji.
-Input  hiragana  to switch to ひらがな.
-       katakana  to switch to カタカナ.
-       [0-9]+    to change the amount of letters.
-       skip      to skip the current letter.
+(define help "Convert the kana into romaji.
+Input  help      print this message.
+       hiragana  switch to ひらがな.
+       katakana  switch to カタカナ.
+       [0-9]+    change the amount of letters.
+       skip      skip the current letter, print correct answer.
        exit      to exit.")
+(displayln help)
 
 (define alphabet
   '(
@@ -21,9 +23,17 @@ Input  hiragana  to switch to ひらがな.
     (ま マ ma) (み ミ mi)  (む ム mu)  (め メ me) (も モ mo)
     (や ヤ ya) (ゆ ユ yu)  (よ ヨ yo)
     (ら ラ ra) (り リ ri)  (る ル ru)  (れ レ re) (ろ ロ ro)
-    (わ ワ wa) #| (ゐ ヰ wi) (ゑ ヱ we) |#          (を ヲ wo)
+    (わ ワ wa) #| (ゐ ヰ wi) (ゑ ヱ we) |#        (を ヲ wo)
     (ん ン n)
   ))
+
+(define-simple-macro (defines (name:id value:expr) ...+)
+  (begin (define name value) ...))
+
+(defines (start-letter-count 5)
+         (hiragana first)
+         (katakana second)
+         (romaji   third))
 
 (define (select-random-letter#io letter-count)
   (list-ref alphabet (random letter-count)))
@@ -40,14 +50,6 @@ Input  hiragana  to switch to ひらがな.
     ([<= value 0] 1)
     (else value)))
 
-(define-simple-macro (defines (name:id value:expr) ...+)
-  (begin (define name value) ...))
-
-(defines (start-letter-count 5)
-         (hiragana first)
-         (katakana second)
-         (romaji   third))
-
 (define (display-many . many)
   (for ([i many])
     (display i))
@@ -63,6 +65,8 @@ Input  hiragana  to switch to ひらがな.
       ([eof-object? input] (newline)
                            (void))
       ([compare "exit"] (void))
+      ([compare "help"] (displayln help)
+                        (loop current letter-count kana))
       ([compare "skip"] (display-many "SKIP! The correct answer was: " (romaji current))
                         (loop (select-random-letter#io letter-count) letter-count kana))
       ([compare "hiragana"] (display-many "KANA-CHOICE HIRAGANA: " (map hiragana (take alphabet letter-count)))
