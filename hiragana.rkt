@@ -1,3 +1,4 @@
+#! /usr/bin/env racket
 #lang racket
 
 (displayln "Convert the hiragana (ひらがな) into romaji
