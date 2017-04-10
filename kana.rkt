@@ -1,7 +1,7 @@
 #! /usr/bin/env racket
 #lang racket
 
-(require syntax/parse/define)
+(require lens racket/pretty syntax/parse/define threading)
 
 (define help "Convert the kana into romaji.
 Input  ka        correct answer for か or カ (similar for other kana).
@@ -73,9 +73,27 @@ Input  ka        correct answer for か or カ (similar for other kana).
     (display i))
   (newline))
 
+(define (add1-to-current hash current correct-or-wrong)
+  (let* ([c-or-w (if (symbol=? correct-or-wrong 'right) first-lens second-lens)]
+         [this-entry (lens-compose c-or-w (hash-ref-lens current))])
+    (if (hash-has-key? hash current)
+      (lens-transform this-entry hash add1)
+      (~>
+        (lens-set (hash-ref-lens current) hash (list 0 0))
+        (lens-transform this-entry _ add1)))))
+
+(define (occurrence entry)
+  (+ (second entry) (third entry)))
+
+(define (statistics-to-list stats)
+  (~>>
+    (sort (hash->list stats) (lambda (x y) (> (occurrence x) (occurrence y))))
+    (map (lambda (x) (list (first x) 'right: (second x) 'wrong: (third x))))))
+
 (let loop ([current (select-random-letter#io start-letter-count)]
            [letter-count start-letter-count]
-           [kana hiragana])
+           [kana hiragana]
+           [statistics (make-immutable-hash)])
   (display (string-append (symbol->string (kana current)) ": "))
   (let* ([input (read-line)]
          [compare (lambda (string) (string=? (if (symbol? string) (symbol->string string) string) input))])
@@ -83,19 +101,23 @@ Input  ka        correct answer for か or カ (similar for other kana).
       ([eof-object? input] (newline)
                            (void))
       ([compare "exit"] (void))
+      ([compare "stats"] (pretty-display (statistics-to-list statistics))
+                         (loop current letter-count kana statistics))
       ([compare "help"] (displayln help)
-                        (loop current letter-count kana))
+                        (loop current letter-count kana statistics))
       ([compare "skip"] (display-many "SKIP! The correct answer was: " (romaji current))
                         (loop (select-random-letter#io letter-count) letter-count kana))
       ([compare "hiragana"] (display-many "KANA-CHOICE HIRAGANA: " (map hiragana (take alphabet letter-count)))
-                            (loop current letter-count hiragana))
+                            (loop current letter-count hiragana statistics))
       ([compare "katakana"] (display-many "KANA-CHOICE KATAKANA: " (map katakana (take alphabet letter-count)))
-                            (loop current letter-count katakana))
+                            (loop current letter-count katakana statistics))
       ([compare (romaji current)] (displayln "CORRECT!")
-                                  (loop (select-random-letter#io letter-count) letter-count kana))
+                                  (~>
+                                    (add1-to-current statistics (kana current) 'right)
+                                    (loop (select-random-letter#io letter-count) letter-count kana _)))
       ([is-string-digits? input] (display "LETTER-CHOICE: ")
                                  (let ([new-count (clamp-letter-count (string->number input))])
                                    (displayln (map kana (take alphabet new-count)))
-                                   (loop current new-count kana)))
+                                   (loop current new-count kana statistics)))
       (else (displayln "WRONG!")
-            (loop current letter-count kana)))))
+            (loop current letter-count kana (add1-to-current statistics (kana current) 'wrong))))))
