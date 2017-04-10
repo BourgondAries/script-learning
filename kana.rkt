@@ -111,7 +111,7 @@ Input  ka        correct answer for か or カ (similar for other kana).
       ([compare "help"] (displayln help)
                         (loop current letter-count kana statistics))
       ([compare "skip"] (display-many "SKIP! The correct answer was: " (romaji current))
-                        (loop (select-random-letter#io letter-count) letter-count kana))
+                        (loop (select-random-letter#io letter-count) letter-count kana statistics))
       ([compare "hiragana"] (display-many "KANA-CHOICE HIRAGANA: " (map hiragana (take alphabet letter-count)))
                             (loop current letter-count hiragana statistics))
       ([compare "katakana"] (display-many "KANA-CHOICE KATAKANA: " (map katakana (take alphabet letter-count)))
