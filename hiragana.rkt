@@ -1,10 +1,10 @@
 #! /usr/bin/env racket
 #lang racket
 
-(displayln "Convert the hiragana (ひらがな) into romaji
-write a number to change the amount of letters
-write skip to skip the current letter
-Write exit or press control+c or control+d to exit")
+(displayln "Convert the hiragana (ひらがな) into romaji.
+Write a number to change the amount of letters.
+Write skip to skip the current letter.
+Write exit or press control+c or control+d to exit.")
 
 (define alphabet
   '(
