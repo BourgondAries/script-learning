@@ -4,7 +4,8 @@
 (require syntax/parse/define)
 
 (define help "Convert the kana into romaji.
-Input  help      print this message.
+Input  ka        correct answer for か or カ (similar for other kana).
+       help      print this message.
        hiragana  switch to ひらがな.
        katakana  switch to カタカナ.
        [0-9]+    change the amount of letters.
