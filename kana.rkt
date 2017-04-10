@@ -10,6 +10,7 @@ Input  ka        correct answer for か or カ (similar for other kana).
        katakana  switch to カタカナ.
        [0-9]+    change the amount of letters.
        skip      skip the current letter, print correct answer.
+       stats     print answer statistics.
        exit      to exit.")
 (displayln help)
 
@@ -86,9 +87,11 @@ Input  ka        correct answer for か or カ (similar for other kana).
   (+ (second entry) (third entry)))
 
 (define (statistics-to-list stats)
-  (~>>
-    (sort (hash->list stats) (lambda (x y) (> (occurrence x) (occurrence y))))
-    (map (lambda (x) (list (first x) 'right: (second x) 'wrong: (third x))))))
+  (if (hash-empty? stats)
+    "The statistics set is empty"
+    (~>>
+      (sort (hash->list stats) (lambda (x y) (> (occurrence x) (occurrence y))))
+      (map (lambda (x) (list (first x) 'right: (second x) 'wrong: (third x)))))))
 
 (let loop ([current (select-random-letter#io start-letter-count)]
            [letter-count start-letter-count]
