@@ -1,10 +1,12 @@
 #! /usr/bin/env racket
 #lang racket
 
-(displayln "Convert the hiragana (ひらがな) into romaji.
-Write a number to change the amount of letters.
-Write skip to skip the current letter.
-Write exit or press control+c or control+d to exit.")
+(displayln "Convert the kana into romaji.
+Input  hiragana  to switch to ひらがな.
+       katakana  to switch to カタカナ.
+       [0-9]+    to change the amount of letters.
+       skip      to skip the current letter.
+       exit      to exit.")
 
 (define alphabet
   '(
@@ -37,22 +39,35 @@ Write exit or press control+c or control+d to exit.")
     (else value)))
 
 (define start-letter-count 5)
+(define hiragana first)
+(define katakana second)
+(define romaji   third)
+
+(define (display-many . many)
+  (for ([i many])
+    (display i))
+  (newline))
 
 (let loop ([current (select-random-letter#io start-letter-count)]
-           [letter-count start-letter-count])
-  (display (string-append (symbol->string (first current)) ": "))
+           [letter-count start-letter-count]
+           [kana hiragana])
+  (display (string-append (symbol->string (kana current)) ": "))
   (let ([input (read-line)])
     (cond
       ([eof-object? input] (newline)
                            (void))
       ([string=? input "exit"] (void))
-      ([string=? input "skip"] (displayln (string-append "SKIP! The correct answer was: " (third current)))
-                               (loop (select-random-letter#io letter-count) letter-count))
+      ([string=? input "skip"] (displayln (string-append "SKIP! The correct answer was: " (romaji current)))
+                               (loop (select-random-letter#io letter-count) letter-count kana))
+      ([string=? input "hiragana"] (display-many "KANA-CHOICE HIRAGANA: " (map hiragana (take alphabet letter-count)))
+                                   (loop current letter-count hiragana))
+      ([string=? input "katakana"] (display-many "KANA-CHOICE KATAKANA: " (map katakana (take alphabet letter-count)))
+                                   (loop current letter-count katakana))
       ([is-string-digits? input] (display "LETTER-CHOICE: ")
                                  (let ([new-count (clamp-letter-count (string->number input))])
-                                   (displayln (map first (take alphabet new-count)))
-                                   (loop current new-count)))
-      ([string=? input (third current)] (displayln "CORRECT!")
-                                         (loop (select-random-letter#io letter-count) letter-count))
+                                   (displayln (map kana (take alphabet new-count)))
+                                   (loop current new-count kana)))
+      ([string=? input (romaji current)] (displayln "CORRECT!")
+                                         (loop (select-random-letter#io letter-count) letter-count kana))
       (else (displayln "WRONG!")
-            (loop current letter-count)))))
+            (loop current letter-count kana)))))
