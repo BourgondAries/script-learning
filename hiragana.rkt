@@ -28,7 +28,7 @@ Write exit or press control+c or control+d to exit.")
   (<= 48 (char->integer character) 57))
 
 (define (is-string-digits? string)
-  (andmap is-digit? (string->list string)))
+  (and (non-empty-string? string) (andmap is-digit? (string->list string))))
 
 (define (clamp-letter-count value)
   (cond
