@@ -11,6 +11,7 @@ Input  ka        correct answer for か or カ (similar for other kana).
        [0-9]+    change the amount of letters.
        skip      skip the current letter, print correct answer.
        stats     print answer statistics.
+       reset     reset statistics.
        exit      to exit.")
 (displayln help)
 
@@ -106,6 +107,8 @@ Input  ka        correct answer for か or カ (similar for other kana).
       ([eof-object? input] (newline)
                            (void))
       ([compare "exit"] (void))
+      ([compare "reset"] (displayln "RESET-STATISTICS!")
+                         (loop current letter-count kana (make-immutable-hash)))
       ([compare "stats"] (pretty-display (statistics-to-list statistics))
                          (loop current letter-count kana statistics))
       ([compare "help"] (displayln help)
