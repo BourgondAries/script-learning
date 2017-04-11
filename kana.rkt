@@ -40,12 +40,12 @@ Input  ka        correct answer for か or カ (similar for other kana).
     (りゃ リャ rya) (りゅ リュ ryu) (りょ リョ ryo)
 
     #| Diacritics |#
-    (が ガ ga) (ぎ ギ gi) (ぐ グ gu) (げ ゲ ge) (ご ゴ go)
-    (ざ ザ za) (じ ジ ji) (ず ズ zu) (ぜ ゼ ze) (ぞ ゾ zo)
-    (だ ダ da) #|(ぢ ヂ ji)|# (づ ヅ zu) (で デ de) (ど ド do)
-    (ば バ ba) (び ビ bi) (ぶ ブ bu) (べ ベ be) (ぼ ボ bo)
-    (ぱ パ pa) (ぴ ピ pi) (ぷ プ pu) (ぺ ペ pe) (ぽ ポ po)
-                        #|(ゔ ヴ vu)|#
+    (が ガ ga)    (ぎ ギ gi)    (ぐ グ gu) (げ ゲ ge) (ご ゴ go)
+    (ざ ザ za)    (じ ジ ji)    (ず ズ zu) (ぜ ゼ ze) (ぞ ゾ zo)
+    (だ ダ da) #| (ぢ ヂ ji) |# (づ ヅ zu) (で デ de) (ど ド do)
+    (ば バ ba)    (び ビ bi)    (ぶ ブ bu) (べ ベ be) (ぼ ボ bo)
+    (ぱ パ pa)    (ぴ ピ pi)    (ぷ プ pu) (ぺ ペ pe) (ぽ ポ po)
+                             #| (ゔ ヴ vu) |#
   ))
 
 (define-simple-macro (defines (name:id value:expr) ...+)
