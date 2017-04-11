@@ -1,7 +1,8 @@
 #! /usr/bin/env racket
 #lang racket
 
-(require lens racket/pretty syntax/parse/define threading)
+(require lens racket/pretty syntax/parse/define threading
+         "logger.rkt")
 
 (define help "Convert the kana into romaji.
 Input  ka        correct answer for か or カ (similar for other kana).
