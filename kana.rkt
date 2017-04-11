@@ -77,24 +77,31 @@ Input  ka        correct answer for か or カ (similar for other kana).
     (display i))
   (newline))
 
+(struct/lens entry (rights wrongs) #:prefab)
+
 (define (add1-to-current hash current correct-or-wrong)
-  (let* ([c-or-w (if (symbol=? correct-or-wrong 'right) first-lens second-lens)]
+  (let* ([c-or-w (if (symbol=? correct-or-wrong 'right) entry-rights-lens entry-wrongs-lens)]
          [this-entry (lens-compose c-or-w (hash-ref-lens current))])
     (if (hash-has-key? hash current)
       (lens-transform this-entry hash add1)
       (~>
-        (lens-set (hash-ref-lens current) hash (list 0 0))
+        (lens-set (hash-ref-lens current) hash (entry 0 0))
         (lens-transform this-entry _ add1)))))
 
 (define (occurrence entry)
-  (+ (second entry) (third entry)))
+  (+ (entry-rights entry) (entry-wrongs entry)))
+
+(define (pair-to-list pair)
+  (list (car pair) (cdr pair)))
 
 (define (statistics-to-list stats)
   (if (hash-empty? stats)
     "The statistics set is empty"
     (~>>
-      (sort (hash->list stats) (lambda (x y) (> (occurrence x) (occurrence y))))
-      (map (lambda (x) (list (first x) 'right: (second x) 'wrong: (third x)))))))
+      (hash->list stats)
+      (map pair-to-list)
+      (sort _ (lambda (x y) (> (occurrence x) (occurrence y))) #:key second)
+      (map (lambda (x) (list (first x) 'right: (entry-rights (second x)) 'wrong: (entry-wrongs (second x))))))))
 
 (let loop ([current (select-random-letter#io start-letter-count)]
            [letter-count start-letter-count]
